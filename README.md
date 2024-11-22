@@ -1,1 +1,1 @@
-# ML-project
+# Miniproject BIO-322

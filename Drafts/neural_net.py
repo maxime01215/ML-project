@@ -68,14 +68,17 @@ tresh = 0.00206913808111479
 
 
 
-
+"""
 unwanted = ["prod_substance", "measure_type_display", "substance_form_display", "sample_name", "device_serial"]
 df_preprocess_train, df_preprocess_test = preprocessing(df_train, df_test, unwanted, tresh) 
    
 
 X = df_preprocess_train.iloc[:, 1:]
 y = df_preprocess_train.PURITY
+"""
 
+X = df_train.iloc[:, 6:]
+y = df_train.PURITY
 
 # Standardize the input features
 standardizer = StandardScaler()
@@ -104,14 +107,14 @@ model_skorch = NeuralNetRegressor(
     optimizer=optim.Adam,
     max_epochs=90,
     batch_size=32,
-    verbose=1
+    verbose=False
 )
 
 
 # Define the parameter grid for hyperparameter tuning
 param_grid = {
-    'module__n_neurons': [32, 64, 96, 128, 160],
-    'module__dropout_rate': [0, 0.1, 0.2, 0.3, 0.4, 0.5]
+    'module__n_neurons': [32, 64, 128],
+    'module__dropout_rate': [0, 0.1, 0.2]
 }
 
 
@@ -148,10 +151,10 @@ print("RMSE = " + str(train_rmse))
 print(" ")
 
 
-X_test_standardized = standardizer.fit_transform(df_preprocess_test)
+X_test_standardized = standardizer.fit_transform(df_test.iloc[:, 5:])
 
 # Create dataframe with indices and purity
-indices = df_preprocess_test.index + 1
+indices = df_test.index + 1
 purity =  mach2.predict(torch.tensor(X_test_standardized, dtype=torch.float32))
 
 df = pd.DataFrame({
